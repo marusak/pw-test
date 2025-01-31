@@ -38,6 +38,7 @@ jobs:
         retention-days: 30
 
     - name: Publish to github pages
+      if: ${{ !cancelled() }}
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -45,10 +46,16 @@ jobs:
         destination_dir: ${{ steps.timestampid.outputs.timestamp }}
 
     - name: Write URL in summary
+      if: ${{ !cancelled() }}
       run: echo "### Test results - https://${{ github.repository_owner }}.github.io/pw-test/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
 
     - name: Publish front-end Test Report
+      if: ${{ !cancelled() }}
       uses: ctrf-io/github-test-reporter@v1
       with:
         report-path: "ctrf/ctrf-report.json"
-      if: always()
+
+    - name: Comment PR
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: $GITHUB_STEP_SUMMARY
