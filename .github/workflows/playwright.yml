@@ -25,3 +25,32 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+  upload:
+    # Merge reports after playwright tests, even if some shards have failed
+    if: always()
+    needs: [test]
+    runs-on: ubuntu-latest
+
+    outputs:
+        timestamp: ${{ steps.timestampid.outputs.timestamp }}
+
+    steps:
+    - name: Set a timestamp
+      id: timestampid
+      run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
+
+    - name: Download report
+      uses: actions/download-artifact@v4
+      with:
+        name: playwright-report
+        path: downloaded-playwright-report
+
+    - name: Push to github pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./downloaded-playwright-report
+        destination_dir: ${{ steps.timestampid.outputs.timestamp }}
+
+    - name: Write URL in summary
+      run: echo "### Test results - https://${{ github.repository_owner }}.github.io/pw-test/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
