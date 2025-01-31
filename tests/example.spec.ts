@@ -5,7 +5,7 @@ test('Flaky', async ({ page }) => {
 
   // Expect a title "to contain" a substring.
   let txt = "Fast and reliable end-to-end testing for modern web apps | Playwright";
-  if (Math.floor(Math.random() * 10) < 5)
+  if (Math.floor(Math.random() * 10) < 4)
       txt = "fdflsf";
   await expect(page).toHaveTitle(txt);
 });
