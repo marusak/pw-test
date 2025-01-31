@@ -19,6 +19,13 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test
+    - name: List
+      run: ls -l ctrf/
+    - name: Publish front-end Test Report
+      uses: ctrf-io/github-test-reporter@v1
+      with:
+        report-path: "ctrf/ctrf-report.json"
+      if: always()
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
@@ -26,7 +33,6 @@ jobs:
         path: playwright-report/
         retention-days: 30
   upload:
-    # Merge reports after playwright tests, even if some shards have failed
     if: always()
     needs: [test]
     runs-on: ubuntu-latest
