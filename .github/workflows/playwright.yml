@@ -53,7 +53,12 @@ jobs:
       with:
         report-path: "ctrf/ctrf-report.json"
 
+    - name: Hack file path
+      if: ${{ !cancelled() }}
+      run: cat $GITHUB_STEP_SUMMARY > summary
+
     - name: Comment PR
-      uses: thollander/actions-comment-pull-request@v2
+      if: ${{ !cancelled() }}
+      uses: thollander/actions-comment-pull-request@v3
       with:
-        message: $GITHUB_STEP_SUMMARY
+        file-path: summary
