@@ -8,6 +8,8 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    outputs:
+        timestamp: ${{ steps.timestampid.outputs.timestamp }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -32,15 +34,6 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
-  upload:
-    if: always()
-    needs: [test]
-    runs-on: ubuntu-latest
-
-    outputs:
-        timestamp: ${{ steps.timestampid.outputs.timestamp }}
-
-    steps:
     - name: Set a timestamp
       id: timestampid
       run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
