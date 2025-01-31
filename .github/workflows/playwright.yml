@@ -7,13 +7,7 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    outputs:
-        timestamp: ${{ steps.timestampid.outputs.timestamp }}
     steps:
-    - name: Set a timestamp
-      id: timestampid
-      run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
-
     - uses: actions/checkout@v4
 
     - uses: actions/setup-node@v4
@@ -36,36 +30,43 @@ jobs:
         path: playwright-report/
         retention-days: 30
 
+    - name: Publish front-end Test Report
+      if: ${{ !cancelled() }}
+      uses: ctrf-io/github-test-reporter@v1
+      with:
+        report-path: "ctrf/ctrf-report.json"
+  publish:
+    if: ${{ !cancelled() }}
+    needs: [test]
+    runs-on: ubuntu-latest
+    outputs:
+        timestamp: ${{ steps.timestampid.outputs.timestamp }}
+    steps:
+    - name: Set a timestamp
+      id: timestampid
+      run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
+
+    - name: Download report
+      uses: actions/download-artifact@v4
+      with:
+        name: playwright-report
+        path: downloaded-playwright-report
+
     - name: Publish to github pages
       if: ${{ !cancelled() }}
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./playwright-report
+        publish_dir: ./downloaded-playwright-report
         destination_dir: ${{ steps.timestampid.outputs.timestamp }}
 
     - name: Write URL in summary
       if: ${{ !cancelled() }}
       run: echo "### Test results - https://${{ github.repository_owner }}.github.io/pw-test/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
 
-    - name: Publish front-end Test Report
-      if: ${{ !cancelled() }}
-      uses: ctrf-io/github-test-reporter@v1
-      with:
-        report-path: "ctrf/ctrf-report.json"
-
-    - name: Hack file path
-      if: ${{ !cancelled() }}
-      run: cat $GITHUB_STEP_SUMMARY > summary
-
-    - name: Hack file pathX
-      if: ${{ !cancelled() }}
-      run: |
-        cat summary
-        ls -l
-
     - name: Comment PR
       if: ${{ !cancelled() }}
       uses: thollander/actions-comment-pull-request@v3
       with:
-        file-path: summary
+        message: |
+          _(Test results - https://${{ github.repository_owner }}.github.io/pw-test/${{ steps.timestampid.outputs.timestamp }})_
