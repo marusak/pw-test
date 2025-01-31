@@ -2,6 +2,7 @@ name: Playwright Tests
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, labeled, unlabeled]
+  workflow_dispatch:
 jobs:
   test:
     timeout-minutes: 60
@@ -56,6 +57,12 @@ jobs:
     - name: Hack file path
       if: ${{ !cancelled() }}
       run: cat $GITHUB_STEP_SUMMARY > summary
+
+    - name: Hack file pathX
+      if: ${{ !cancelled() }}
+      run: |
+        cat summary
+        ls -l
 
     - name: Comment PR
       if: ${{ !cancelled() }}
