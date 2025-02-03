@@ -41,11 +41,9 @@ test.describe('New Todo', () => {
     // create a new todo locator
     const newTodo = page.getByPlaceholder('What needs to be done?');
 
-    // Create one todo item.
     await newTodo.fill(TODO_ITEMS[0]);
     await newTodo.press('Enter');
 
-    // Check that input is empty.
     await expect(newTodo).toBeEmpty();
     await checkNumberOfTodosInLocalStorage(page, 1);
   });
