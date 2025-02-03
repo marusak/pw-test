@@ -55,7 +55,6 @@ test.describe('New Todo', () => {
     // create a todo count locator
     const todoCount = page.getByTestId('todo-count')
   
-    // Check test using different methods.
     await expect(page.getByText('3 items left')).toBeVisible();
     await expect(todoCount).toHaveText('3 items left');
     await expect(todoCount).toContainText('3');
