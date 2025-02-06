@@ -44,6 +44,8 @@ jobs:
     if: ${{ !cancelled() }}
     needs: [test]
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     outputs:
         timestamp: ${{ steps.timestampid.outputs.timestamp }}
         summary: ${{ steps.summaryid.outputs.summary }}
