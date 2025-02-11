@@ -120,7 +120,6 @@ test.describe('Mark all as completed', () => {
 });
 
 test.describe('Item', () => {
-
   test('should allow me to mark items as complete', async ({ page }) => {
     // create a new todo locator
     const newTodo = page.getByPlaceholder('What needs to be done?');
