@@ -63,7 +63,6 @@ test.describe('New Todo', () => {
     await expect(todoCount).toContainText('3');
     await expect(todoCount).toHaveText(/3/);
 
-    // Check all items in one call.
     await expect(page.getByTestId('todo-title')).toHaveText(TODO_ITEMS);
     await checkNumberOfTodosInLocalStorage(page, 3);
   });
